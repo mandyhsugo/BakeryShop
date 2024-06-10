@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+
+    <link href="https://cdn.staticfile.org/wangeditor5/5.1.23/css/style.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: rgb(241, 242, 243);
+        }
+
+        .el-header {
+            background-color: white;
+        }
+
+        .center {
+            width: 1200px;
+            margin: 0 auto
+        }
+
+        footer h3 {
+            color: white;
+        }
+
+        #footer_center p {
+            margin: 0;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+        <el-main class="center" style="margin-top: 30px">
+            <el-row gutter="10">
+                <el-col span="4">
+                    <el-card style="height: 1000px">
+                        <el-menu @select="handleSelect" style="border: 0" active-text-color="orange">
+                            <el-menu-item index="1">
+                                Page
+                            </el-menu-item>
+                            <el-menu-item index="2">
+                                Management
+                            </el-menu-item>
+                        </el-menu>
+                    </el-card>
+                </el-col>
+                <el-col span="20">
+                    <el-card>
+                        <h1 style="color: orange;font-size: 35px">{{c.id==null?'Post Article':'Edit Article'}}</h1>
+                        <el-form label-width="80px">
+                            <el-form-item label="Title">
+                                <el-input placeholder="Title" style="width: 300px" v-model="c.title"></el-input>
+                            </el-form-item>
+                            <el-form-item label="Cat.">
+                                <el-radio-group :disabled="c.id!=null" @input="handleInput" v-model="c.type">
+                                    <el-radio-button label="1">Recipe</el-radio-button>
+                                    <el-radio-button label="2">Video</el-radio-button>
+                                    <el-radio-button label="3">Info</el-radio-button>
+                                </el-radio-group>
+                            </el-form-item>
+                            <el-form-item label="sub-class">
+                                <el-select v-model="c.categoryId">
+                                    <el-option v-for="c in categoryArr"
+                                               :label="c.name" :value="c.id"></el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="Cover">
+                                <img v-if="oldImgUrl!=''" :src="oldImgUrl"
+                                     style="width: 145px;height: 145px">
+
+                                <el-upload
+                                        action="/v1/upload"
+                                        name="file"
+                                        limit="1"
+                                        list-type="picture-card"
+                                        :on-preview="handlePictureCardPreview"
+                                        :on-success="handleSuccess"
+                                        :on-remove="handleRemove">
+                                    <i class="el-icon-plus"></i>
+                                </el-upload>
+                                <el-dialog :visible.sync="dialogVisible">
+                                    <img width="100%" :src="dialogImageUrl" alt="">
+                                </el-dialog>
+
+                            </el-form-item>
+
+                            <el-form-item v-show="c.type==2" label="Video">
+
+                                <el-upload
+                                        action="/v1/upload"
+                                        name="file"
+                                        limit="1"
+                                        accept="video/*"
+                                        :on-preview="handlePictureCardPreview"
+                                        :on-success="handleSuccess"
+                                        :on-remove="handleRemove">
+                                    <el-button type="primary">Upload</el-button>
+                                    <div>Only MP4 files can be uploaded, and they must not exceed 100MB in size</div>
+                                </el-upload>
+
+                            </el-form-item>
+                            <el-form-item v-show="c.type!=2" label="Content">
+
+                                <div style="border: 1px solid #ccc">
+                                    <div id="toolbar-container" style="border-bottom: 1px solid #ccc;">
+                                       </div>
+                                    <div id="editor-container" style="height: 300px;"></div>
+                                </div>
+
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="post()">{{c.id==null?'Post Article':'Edit Article'}}</el-button>
+                            </el-form-item>
+
+                        </el-form>
+
+                    </el-card>
+                </el-col>
+            </el-row>
+
+        </el-main>
+        <el-footer style="background-color: #2f3234;
+        height: 280px;padding: 50px 0">
+            <div class="center" style="color: #666;text-align: center">
+                <el-row gutter="20">
+
+                    <el-col span="8">
+                        <el-row id="footer_center">
+                            <el-col span="8">
+                                <h3>About Us</h3>
+                                <p>About Us</p>
+                                <p>Baking college</p>
+                                <p>Baking Recipe</p>
+                                <p>Job recruitment</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>service and support</h3>
+                                <p>Contact Us</p>
+                                <p>Advertising</p>
+                                <p>User Agreement</p>
+                                <p>Links</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>Bottom navigation</h3>
+                                <p>Archiver</p>
+                                <p>Mobile Version</p>
+
+                            </el-col>
+                        </el-row>
+                    </el-col>
+                    <el-col span="8">
+                        <div style="font-size: 60px;">
+                            <span style="color: orange">BAKING WORLD</span>
+                        </div>
+                        <p>Baking Industry Online Community Platform</p>
+                    </el-col>
+                </el-row>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+
+<script src="https://cdn.staticfile.org/wangeditor5/5.1.23/index.min.js"></script>
+
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                c: {
+                    title: "", type: "1", categoryId: "", imgUrl: "",
+                    content: "", videoUrl: ""
+                },
+                dialogImageUrl: '',
+                dialogVisible: false,
+                categoryArr: [],
+                oldImgUrl:""
+            }
+        },
+        methods: {
+            post() {
+                if (v.c.type==2&&v.c.videoUrl==""){
+                    v.$message.error("Select a video file!");
+                    return;
+                }
+                if (v.c.imgUrl == "") {
+                    v.$message.error("Select a cover!");
+                    return;
+                }
+                if (v.c.categoryId == "") {
+                    v.$message.error("Select a secondary category!");
+                    return;
+                }
+                let user = localStorage.user ? JSON.parse(localStorage.user) : null;
+                if (user != null) {
+                    v.c.createBy = user.id;//Set author id
+                }
+                //Setting summary
+                v.c.brief = editor.getText().slice(0,50);
+                //Make a request to publish an article
+                axios.post("/v1/contents/add-new",v.c).then(function (response) {
+                    if (response.data.code==1){
+                        location.href="articleManagement.html?type="+v.c.type;
+
+                    }
+                })
+
+            },
+            handleSuccess(response, file, fileList) {
+
+                console.log("file="+file.raw.type);
+                //Determine whether the uploaded file is an image or a video
+                if (file.raw.type.includes('image')){//Picture
+                    v.c.imgUrl = response.data;
+                }else{//Video
+                    v.c.videoUrl = response.data;
+                }
+
+            },
+            handleInput() {
+                v.c.categoryId = "";//Uncheck the secondary category
+                editor.setHtml("");//Clear
+                //Query the corresponding secondary classification data through the value of type  /v1/categorys/1/sub
+                axios.get("/v1/categories/" + v.c.type + "/sub").then(function (response) {
+                    if (response.data.code == 1) {
+                        v.categoryArr = response.data.data;
+                    }
+                })
+            },
+            handleSelect(key, keyPath) {
+                if (key == 1) {
+                    location.href = "personal.html";
+                } else {
+                    location.href = "articleManagement.html"
+                }
+            },
+            handleRemove(file, fileList) {
+                //Determine whether the uploaded file is an image or a video
+                if (file.raw.type.includes('image')){//picture
+                    v.c.imgUrl = "";
+                }else{//Video
+                    v.c.videoUrl = "";
+                }
+                console.log(file, fileList);
+                axios.post("/v1/remove?url=" + file.response.data).then(function (response) {
+                    if (response.data.code == 1) {
+                        v.$message.success("Deletion completed!");
+                    }
+                })
+            },
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.dialogVisible = true;
+            }
+
+        },
+        created: function () {
+
+            if (location.search.includes("type")) {
+
+                this.c.type = new URLSearchParams(location.search).get("type");
+
+                /
+                axios.get("/v1/categories/" + this.c.type + "/sub").then(function (response) {
+                    if (response.data.code == 1) {
+                        v.categoryArr = response.data.data;
+                    }
+                })
+
+            }
+
+            if (location.search.includes("id")){
+
+                let id = new URLSearchParams(location.search).get("id");
+
+                axios.get("/v1/contents/"+id+"/update").then(function (response) {
+                    if (response.data.code==1){
+                        v.c = response.data.data;
+
+                        editor.setHtml(v.c.content);
+
+                        v.oldImgUrl = v.c.imgUrl;
+
+                    }
+                })
+            }
+
+
+
+        }
+    })
+
+
+    const {createEditor, createToolbar} = window.wangEditor
+    const editorConfig = {
+        placeholder: 'Fill in the article content...',
+        onChange(editor) {
+            const html = editor.getHtml()
+            console.log('editor content', html)
+
+            v.c.content = html;
+        }
+    }
+    const editor = createEditor({
+        selector: '#editor-container',
+        html: '<p><br></p>',
+        config: editorConfig,
+        mode: 'simple',
+    })
+    const toolbarConfig = {}
+    const toolbar = createToolbar({
+        editor,
+        selector: '#toolbar-container',
+        config: toolbarConfig,
+        mode: 'simple',
+    })
+
+</script>
+</html>

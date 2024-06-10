@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <style>
+        .center {
+            width: 1200px;
+            margin: 0 auto
+        }
+
+        footer h3 {
+            color: white;
+        }
+
+        #footer_center p {
+            margin: 0;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+        <el-main class="center" style="margin-top: 30px">
+            <el-row gutter="20">
+                <el-col span="12">
+                    <el-card>
+                        <img src="imgs/reg.png" width="100%">
+                    </el-card>
+                </el-col>
+                <el-col span="12">
+                    <el-form label-width="80px">
+                        <el-form-item>
+                            <h1 style="float: left;font-size: 28px">Create Account</h1>
+                            <a style="float: right;text-decoration: none;
+                            color: #409eff;position: relative;top: 20px" href="/login.html">Log In</a>
+                        </el-form-item>
+                        <el-form-item label="Username">
+                            <el-input placeholder="Username" v-model="user.userName"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Password">
+                            <el-input placeholder="Password" v-model="user.password"></el-input>
+                        </el-form-item>
+                        <el-form-item label="Nickname">
+                            <el-input placeholder="Nickname" v-model="user.nickName"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="reg()">Create Account</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
+        </el-main>
+        <el-footer style="background-color: #2f3234;
+        height: 280px;padding: 50px 0">
+            <div class="center" style="color: #666;text-align: center">
+                <el-row gutter="20">
+
+                    <el-col span="8">
+                        <el-row id="footer_center">
+                            <el-col span="8">
+                                <h3>About Us</h3>
+                                <p>About Us</p>
+                                <p>Baking college</p>
+                                <p>Baking Recipe</p>
+                                <p>Job recruitment</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>service and support</h3>
+                                <p>Contact Us</p>
+                                <p>Advertising</p>
+                                <p>User Agreement</p>
+                                <p>Links</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>Bottom navigation</h3>
+                                <p>Archiver</p>
+                                <p>Mobile Version</p>
+
+                            </el-col>
+                        </el-row>
+                    </el-col>
+                    <el-col span="8">
+                        <div style="font-size: 60px;">
+                            <span style="color: orange">BAKING WORLD</span>
+                        </div>
+                        <p>Baking Industry Online Community Platform</p>
+                    </el-col>
+                </el-row>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<!--引入Axios-->
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                user:{userName:"",password:"",nickName:""}
+            }
+        },
+        methods: {
+            reg(){
+
+                axios.post("/v1/users/reg",v.user).then(function (response) {
+                    if (response.data.code==1){
+                        location.href="/login.html";
+                    }else{
+                        v.$message.error(response.data.msg);
+                    }
+                })
+            }
+        }
+    })
+</script>
+</html>

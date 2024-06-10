@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <style>
+        body{
+            background-color: rgb(241,242,243);
+        }
+        .el-header{
+            background-color: white;
+        }
+        .center{width: 1200px;margin: 0 auto}
+        footer h3{
+            color: white;
+        }
+        #footer_center p{
+            margin: 0;
+        }
+
+        .right_top_card>div{
+            padding: 0;
+        }
+
+        .title_p{
+            height: 40px;
+            overflow: hidden;
+
+            display: -webkit-box;
+            -webkit-line-clamp:2;
+            -webkit-box-orient: vertical;
+            margin: 0;
+        }
+
+        a{
+            text-decoration: none;
+            color: black;
+        }
+        a:hover{
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+        <el-main class="center" style="margin-top: 30px">
+        <el-row gutter="20">
+            <el-col span="18">
+                <el-card>
+                    <h2 style="color: orange;text-align: center">
+                        {{c.title}}
+                    </h2>
+                    <p style="font-size: 12px;color: #666;text-align: center ">
+                        Author:{{c.nickName}} | Creation Time :{{c.createTime}} | Reading Times:{{c.viewCount}}
+                    </p>
+                    <el-divider></el-divider>
+                    <div v-if="c.type!=2">
+                        <el-card style="font-size: 12px;">
+                            <b style="color: #409EFF">Brief:</b>
+                            {{c.brief}}
+                        </el-card>
+                        <p v-html="c.content"></p>
+                    </div>
+                    <div v-else>
+                        <video style="width: 100%" :src="c.videoUrl"
+                        controls type="video/mp4"></video>
+                    </div>
+                </el-card>
+
+                <el-card>
+                    <p>Post Comment</p>
+                    <el-divider></el-divider>
+                    <el-row gutter="20">
+                        <el-col span="20">
+                            <el-input type="textarea" v-model="comment.content" placeholder="Saying sth..."></el-input>
+                        </el-col>
+                        <el-col span="4">
+                            <el-button @click="post()">Post</el-button>
+                        </el-col>
+                    </el-row>
+                    <el-row v-for="c in commentArr" style="margin-top: 20px">
+                        <el-col span="2">
+                            <el-avatar :src="c.userImgUrl"></el-avatar>
+                        </el-col>
+                        <el-col span="22">
+                            <span style="font-weight: bold;color: orange">{{c.nickName}}:</span>
+                            <p style="margin: 5px 0">{{c.content}}</p>
+                            <span style="font-size: 12px;color: #666">{{c.createTime}}</span>
+                        </el-col>
+                    </el-row>
+                </el-card>
+
+            </el-col>
+            <el-col span="6">
+                <el-card class="right_top_card">
+                    <div style="background-image: url('imgs/avarbg.jpg');height: 90px">
+                    </div>
+                    <div style="text-align: center;position: relative;bottom: 50px">
+                        <img :src="c.userImgUrl" style="
+                        width: 90px;height: 90px;border-radius: 90px;border:5px solid white">
+                        <p style="font-size: 20px;margin: 0;font-weight: bold">{{c.nickName}}</p>
+                        <i class="el-icon-edit">Author</i><br>
+                        <i class="el-icon-time">{{c.createTime}}</i>
+                    </div>
+                </el-card>
+
+                <el-card style="margin: 10px 0">
+                    <h3>Other Article By the Author</h3>
+                    <el-divider></el-divider>
+                    <el-row gutter="10" v-for="c in otherArr">
+                        <el-col span="10">
+                            <a :href="'/detail.html?id='+c.id">
+                                <img :src="c.imgUrl" width="100%" height="70px">
+                            </a>
+                        </el-col>
+                        <el-col span="14">
+                            <a :href="'/detail.html?id='+c.id">
+                                <p class="title_p">{{c.title}}</p>
+                            </a>
+                            <i class="el-icon-time">{{c.createTime}}</i>
+                        </el-col>
+                    </el-row>
+                </el-card>
+
+                <el-card style="margin: 10px 0">
+                    <h3>Popular Article</h3>
+                    <el-divider></el-divider>
+                    <el-row gutter="10" v-for="c in hotArr">
+                        <el-col span="10">
+                            <a :href="'/detail.html?id='+c.id">
+                                <img :src="c.imgUrl" width="100%" height="70px">
+                            </a>
+                        </el-col>
+                        <el-col span="14">
+                            <a :href="'/detail.html?id='+c.id">
+                                <p class="title_p">{{c.title}}</p>
+                            </a>
+                            <i class="el-icon-time">{{c.createTime}}</i>
+                        </el-col>
+                    </el-row>
+                </el-card>
+
+            </el-col>
+        </el-row>
+
+        </el-main>
+        <el-footer style="background-color: #2f3234;
+        height: 280px;padding: 50px 0">
+            <div class="center" style="color: #666;text-align: center">
+                <el-row gutter="20">
+
+                    <el-col span="8">
+                        <el-row id="footer_center">
+                            <el-col span="8">
+                                <h3>About Us</h3>
+                                <p>About Us</p>
+                                <p>Baking college</p>
+                                <p>Baking Recipe</p>
+                                <p>Job recruitment</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>service and support</h3>
+                                <p>Contact Us</p>
+                                <p>Advertising</p>
+                                <p>User Agreement</p>
+                                <p>Links</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>Bottom navigation</h3>
+                                <p>Archiver</p>
+                                <p>Mobile Version</p>
+
+                            </el-col>
+                        </el-row>
+                    </el-col>
+                    <el-col span="8">
+                        <div style="font-size: 60px;">
+                            <span style="color: orange">BAKING WORLD</span>
+                        </div>
+                        <p>Baking Industry Online Community Platform</p>
+                    </el-col>
+                </el-row>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<!--引入Axios-->
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                c:{},
+                otherArr:[],
+                hotArr:[],
+                comment:{content:""},
+                commentArr:[]
+            }
+        },
+        methods: {
+            post(){
+                if (v.comment.content.trim()==""){
+                    v.$message.error("Enter the content of the comment!");
+                    return;
+                }
+                let user = localStorage.user?JSON.parse(localStorage.user):null;
+                if (user==null){
+                    alert("please log in first!");
+                    location.href = "/login.html";
+                    return;
+                }
+                //author id and article id
+                v.comment.userId = user.id;
+                v.comment.contentId = v.c.id;
+                //send request
+                axios.post("/v1/comments/add-new",v.comment).then(function (response) {
+                    if (response.data.code==1){
+                        alert("Comment completed!");
+                        v.comment.content="";
+                        v.loadComments(v.c.id);
+                    }else{
+                        alert("Login timeout, please log in again!");
+                        location.href="/login.html";
+                    }
+                })
+            },
+            loadComments(id){
+                //Request comment data related to the current article
+                axios.get("/v1/comments/"+id).then(function (response) {
+                    if(response.data.code==1){
+                        v.commentArr = response.data.data;
+                    }
+                })
+            }
+        },
+        created:function () {
+
+            //Request popular articles
+            axios.get("/v1/contents/hot").then(function (response) {
+                if (response.data.code==1){
+                    v.hotArr = response.data.data;
+                }
+            })
+            let id = new URLSearchParams(location.search).get("id");
+            axios.get("/v1/contents/"+id+"/detail").then(function (response) {
+                if (response.data.code==1){
+                    v.c=response.data.data;
+                    console.log(v.c);
+                    //Load other articles of the author
+                    axios.get("/v1/contents/"+v.c.userId+"/other").then(function (response) {
+                        if (response.data.code==1){
+                            v.otherArr = response.data.data;
+                        }
+                    })
+                }
+            })
+
+            this.loadComments(id);
+        }
+    })
+</script>
+</html>

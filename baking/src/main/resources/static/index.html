@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <link href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: rgb(241, 242, 243);
+        }
+
+        .el-header {
+            background-color: white;
+        }
+
+        .center {
+            width: 1200px;
+            margin: 0 auto
+        }
+
+        footer h3 {
+            color: white;
+        }
+
+        #footer_center p {
+            margin: 0;
+        }
+
+        .title_p {
+            height: 40px;
+            overflow: hidden;
+
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        a:hover {
+            color: orange;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <my-header></my-header>
+        <el-main class="center" style="margin-top: 30px">
+
+            <el-carousel :interval="3000" height="350px">
+                <el-carousel-item v-for="b in bannerArr">
+                    <img :src="b.imgUrl" height="100%" width="100%">
+                </el-carousel-item>
+            </el-carousel>
+
+            <el-row style="background-color: white">
+                <el-col span="3">
+                    <p style="font-size: 28px;margin: 15px">Recipe</p>
+                </el-col>
+                <el-col span="21">
+                    <el-menu @select="recipeSelect" active-text-color="orange" default-active="0"
+                             mode="horizontal">
+                        <el-menu-item index="0">All</el-menu-item>
+                        <el-menu-item :index="r.id" v-for="r in recipeCategoryArr">{{r.name}}</el-menu-item>
+
+                    </el-menu>
+                </el-col>
+            </el-row>
+            <el-row gutter="20">
+                <el-col span="6" v-for="item in recipeArr">
+                    <el-card style="margin: 10px 0">
+                        <a :href="'/detail.html?id='+item.id">
+                            <img :src="item.imgUrl" height="144" width="100%">
+                            <p class="title_p">{{item.title}}</p>
+                        </a>
+                        <el-row>
+                            <el-col span="4">
+                                <el-avatar :src="item.userImgUrl" size="small"></el-avatar>
+                            </el-col>
+                            <el-col span="10">{{item.nickName}}</el-col>
+                            <el-col span="10">
+                                    <span style="float: right;
+                                    font-size: 12px;color: #666">{{item.categoryName}}</span>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <div style="text-align: center;margin-bottom: 20px">
+                <el-button @click="location.href='/contentList.html?type=1'">More Recipes</el-button>
+            </div>
+
+            <el-row style="background-color: white">
+                <el-col span="3">
+                    <p style="font-size: 28px;margin: 15px">Video</p>
+                </el-col>
+                <el-col span="21">
+                    <el-menu @select="videoSelect" active-text-color="orange" default-active="0"
+                             mode="horizontal">
+                        <el-menu-item index="0">All</el-menu-item>
+                        <el-menu-item :index="v.id" v-for="v in videoCategoryArr">{{v.name}}</el-menu-item>
+                    </el-menu>
+                </el-col>
+            </el-row>
+            <el-row gutter="20">
+                <el-col span="6" v-for="item in videoArr">
+                    <el-card style="margin: 10px 0">
+                        <a :href="'/detail.html?id='+item.id">
+                            <img :src="item.imgUrl" height="144" width="100%">
+                            <p class="title_p">{{item.title}}</p>
+                        </a>
+                        <el-row>
+                            <el-col span="4">
+                                <el-avatar :src="item.userImgUrl" size="small"></el-avatar>
+                            </el-col>
+                            <el-col span="10">{{item.nickName}}</el-col>
+                            <el-col span="10">
+                                    <span style="float: right;
+                                    font-size: 12px;color: #666">{{item.categoryName}}</span>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <div style="text-align: center;margin-bottom: 20px">
+                <el-button @click="location.href='/contentList.html?type=2'">More Video</el-button>
+            </div>
+
+
+            <el-row style="background-color: white">
+                <el-col span="3">
+                    <p style="font-size: 28px;margin: 15px">Info</p>
+                </el-col>
+                <el-col span="21">
+                    <el-menu @select="infoSelect" active-text-color="orange" default-active="0"
+                             mode="horizontal">
+                        <el-menu-item index="0">All</el-menu-item>
+                        <el-menu-item :index="i.id" v-for="i in infoCategoryArr">{{i.name}}</el-menu-item>
+
+                    </el-menu>
+                </el-col>
+            </el-row>
+            <el-row gutter="20">
+                <el-col span="6" v-for="item in infoArr">
+                    <el-card style="margin: 10px 0">
+                        <a :href="'/detail.html?id='+item.id">
+                            <img :src="item.imgUrl" height="144" width="100%">
+                            <p class="title_p">{{item.title}}</p>
+                        </a>
+                        <el-row>
+                            <el-col span="4">
+                                <el-avatar :src="item.userImgUrl" size="small"></el-avatar>
+                            </el-col>
+                            <el-col span="10">{{item.nickName}}</el-col>
+                            <el-col span="10">
+                                    <span style="float: right;
+                                    font-size: 12px;color: #666">{{item.categoryName}}</span>
+                            </el-col>
+                        </el-row>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <div style="text-align: center;margin-bottom: 20px">
+                <el-button @click="location.href='/contentList.html?type=3'">More Info</el-button>
+            </div>
+
+        </el-main>
+        <el-footer style="background-color: #2f3234;
+        height: 280px;padding: 50px 0">
+            <div class="center" style="color: #666;text-align: center">
+                <el-row gutter="20">
+
+                    <el-col span="8">
+                        <el-row id="footer_center">
+                            <el-col span="8">
+                                <h3>About Us</h3>
+                                <p>About Us</p>
+                                <p>Baking college</p>
+                                <p>Baking Recipe</p>
+                                <p>Job recruitment</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>service and support</h3>
+                                <p>Contact Us</p>
+                                <p>Advertising</p>
+                                <p>User Agreement</p>
+                                <p>Links</p>
+
+                            </el-col>
+                            <el-col span="8">
+                                <h3>Bottom navigation</h3>
+                                <p>Archiver</p>
+                                <p>Mobile Version</p>
+
+                            </el-col>
+                        </el-row>
+                    </el-col>
+                    <el-col span="8">
+                        <div style="font-size: 60px;">
+                            <span style="color: orange">BAKING WORLD</span>
+                        </div>
+                        <p>Baking Industry Online Community Platform</p>
+                    </el-col>
+                </el-row>
+            </div>
+        </el-footer>
+    </el-container>
+</div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<!--引入Axios-->
+<script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                recipeArr: [],
+                videoArr: [],
+                infoArr: [],
+                recipeCategoryArr: [],
+                videoCategoryArr: [],
+                infoCategoryArr: [],
+                bannerArr: []
+            }
+        },
+        methods: {
+            recipeSelect(key, keyPath) {
+                //key is the id of the secondary classification
+                this.loadContent(1, key);
+            },
+            videoSelect(key, keyPath) {
+                this.loadContent(2, key);
+            },
+            infoSelect(key, keyPath) {
+                this.loadContent(3, key);
+            },
+            loadContent(type, categoryId) {
+                //Request the first 4 items of all recipe data
+                axios.get("/v1/contents/" + type + "/" + categoryId + "/index").then(function (response) {
+                    if (response.data.code == 1) {
+                        switch (type) {
+                            case 1:
+                                v.recipeArr = response.data.data;
+                                break;
+                            case 2:
+                                v.videoArr = response.data.data;
+                                break;
+                            case 3:
+                                v.infoArr = response.data.data;
+                                break;
+                        }
+                    }
+                })
+            }
+        },
+        created: function () {
+            //Request all carousel data
+            axios.get("/v1/banners/").then(function (response) {
+                if (response.data.code == 1) {
+                    v.bannerArr = response.data.data;
+                }
+            })
+            //Request a secondary category related to recipes
+            axios.get("/v1/categories/1/sub").then(function (response) {
+                if (response.data.code == 1) {
+                    v.recipeCategoryArr = response.data.data;
+                }
+            })
+            //Request video related secondary classification
+            axios.get("/v1/categories/2/sub").then(function (response) {
+                if (response.data.code == 1) {
+                    v.videoCategoryArr = response.data.data;
+                }
+            })
+            //Secondary classification related to requesting information
+            axios.get("/v1/categories/3/sub").then(function (response) {
+                if (response.data.code == 1) {
+                    v.infoCategoryArr = response.data.data;
+                }
+            })
+
+            //Request the first 4 items of all data in three categories
+            this.loadContent(1, 0);
+            this.loadContent(2, 0);
+            this.loadContent(3, 0);
+
+        }
+    })
+</script>
+</html>
